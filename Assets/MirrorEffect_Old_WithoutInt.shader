@@ -7,9 +7,8 @@ Shader "Fx/MirrorEffect_Old_WithoutInt"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
-
+        Cull Off ZWrite Off ZTest Always
+        
         Pass
         {
             CGPROGRAM
