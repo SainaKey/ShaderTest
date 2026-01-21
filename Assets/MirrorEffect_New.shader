@@ -1,9 +1,9 @@
-Shader "Fx/MirrorEffect_Test3"
+Shader "Fx/MirrorEffect_Test6"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _MirrorDirection ("Mirror Direction", Range(0, 1)) = 0
+        _MirrorDirection ("Mirror Direction", int) = 0
     }
     SubShader
     {
@@ -31,14 +31,14 @@ Shader "Fx/MirrorEffect_Test3"
             };
 
             sampler2D _MainTex;
-            // float4 _MainTex_ST;  // 削除
-            float _MirrorDirection;
+            float4 _MainTex_ST;
+            int _MirrorDirection;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;  // TRANSFORM_TEXを使わない
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
 
@@ -46,9 +46,9 @@ Shader "Fx/MirrorEffect_Test3"
             {
                 float2 uv = i.uv;
                 
-                float isVertical = step(0.5, _MirrorDirection);
-                uv.x = lerp(1.0 - uv.x, uv.x, isVertical);
-                uv.y = lerp(uv.y, 1.0 - uv.y, isVertical);
+                // 三項演算子で書く（Fx/Mirrorと同じスタイル）
+                uv.x = ((_MirrorDirection == 0) ? 1 - i.uv.x : i.uv.x);
+                uv.y = ((_MirrorDirection == 1) ? 1 - i.uv.y : i.uv.y);
                 
                 fixed4 col = tex2D(_MainTex, uv);
                 return col;
